@@ -10567,8 +10567,13 @@ components:
           type: integer
           readOnly: true
           description: Total number of certified contributors who rated the video
+        duration:
+          type: integer
+          readOnly: true
+          description: Duration of the video
       required:
       - description
+      - duration
       - language
       - name
       - publication_date
@@ -10678,6 +10683,12 @@ components:
           maximum: 2147483647
           minimum: -2147483648
           description: Total number of certified contributors who rated the video
+        duration:
+          type: integer
+          readOnly: true
+          description: Duration of the video
+          maximum: 2147483647
+          minimum: 0
       required:
       - criteria_scores
       - video_id
