@@ -45,6 +45,7 @@ export const getVideoInformation = async (videoId: string) => {
         rating_n_ratings: 0,
         rating_n_contributors: 0,
         criteria_scores: [],
+        duration: 0,
       };
     }
   }
