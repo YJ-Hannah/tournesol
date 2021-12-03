@@ -24,11 +24,11 @@ class VideoApi(TestCase):
     _list_of_videos = []
 
     def setUp(self):
-        
-        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01, publication_date=date(2021,1,1))
-        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02, publication_date=date(2021,1,2))
-        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03, publication_date=date(2021,1,3))
-        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04, publication_date=date(2021,1,4))
+
+        video_1 = Video.objects.create(video_id=self._video_id_01, name=self._video_id_01, publication_date=date(2021,1,1), uploader="uploader1")
+        video_2 = Video.objects.create(video_id=self._video_id_02, name=self._video_id_02, publication_date=date(2021,1,2), uploader="uploader2")
+        video_3 = Video.objects.create(video_id=self._video_id_03, name=self._video_id_03, publication_date=date(2021,1,3), uploader="uploader2")
+        video_4 = Video.objects.create(video_id=self._video_id_04, name=self._video_id_04, publication_date=date(2021,1,4), uploader="uploader3")
         self._list_of_videos = [video_1, video_2, video_3, video_4]
         VideoCriteriaScore.objects.create(video=video_1, criteria="reliability", score=0.1)
         VideoCriteriaScore.objects.create(video=video_2, criteria="reliability", score=0.2)
@@ -386,69 +386,9 @@ class VideoApi(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.data["count"], 3)
 
-    def test_search_in_tags_should_not_affect_order(self):
-        video1 = Video.objects.get(video_id=self._video_id_01)
-        video1.tags.create(name="tag1")
-        video1.tags.create(name="tag2")
-        video1.tags.create(name="tag3")
-        video2 = Video.objects.get(video_id=self._video_id_02)
-        video2.tags.create(name="tag4")
-
+    def test_get_video_uploader(self):
         client = APIClient()
-        resp = client.get('/video/?search=tag')
+
+        resp = client.get('/video/?uploader=uploader2')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(len(resp.data["results"]), 2)
-        # Video2 with higher score should remain listed as the top video
-        self.assertEqual(resp.data["results"][0]["video_id"], self._video_id_02)
-
-    @patch("tournesol.views.video.youtube_video_details")
-    def test_create_video_with_missing_statistics(self, mock_youtube):
-        mock_youtube.return_value = {
-            "items": [
-                {
-                    "contentDetails": {
-                        "caption": "true",
-                        "contentRating": {},
-                        "definition": "hd",
-                        "dimension": "2d",
-                        "duration": "PT21M3S",
-                        "licensedContent": True,
-                        "projection": "rectangular"
-                    },
-                    "etag": "ntdShdXlk7wT8kjjPpNj9jwgyH4",
-                    "id": "NeADlWSDFAQ",
-                    "kind": "youtube#video",
-                    "snippet": {
-                        "categoryId": "22",
-                        "channelId": "UCAuUUnT6oDeKwE6v1NGQxug",
-                        "channelTitle": "TED",
-                        "defaultAudioLanguage": "en",
-                        "defaultLanguage": "en",
-                        "description": "Video description",
-                        "liveBroadcastContent": "none",
-                        "localized": {},
-                        "publishedAt": "2012-10-01T15:27:35Z",
-                        "tags": ["tournesol"],
-                        "thumbnails": {},
-                        "title": "Video title"
-                    },
-                    "statistics": {}
-                }
-            ],
-            "kind": "youtube#videoListResponse",
-            "pageInfo": {
-                "resultsPerPage": 1,
-                "totalResults": 1
-            }
-        }
-
-        client = APIClient()
-        response = client.post(
-            "/video/",
-            data={"video_id": "NeADlWSDFAQ"},
-            format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.json())
-        self.assertEqual(response.json()["name"], "Video title")
-        video = Video.objects.get(video_id="NeADlWSDFAQ")
-        self.assertEqual(video.views, None)
+        self.assertEqual(resp.data["count"], 2)
