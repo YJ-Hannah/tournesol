@@ -1,4 +1,5 @@
 import { VideoService, UsersService, Video } from 'src/services/openapi';
+import humanizeDuration from 'humanize-duration';
 
 export function extractVideoId(idOrUrl: string) {
   const matchUrl = idOrUrl.match(
@@ -137,3 +138,15 @@ export async function getVideoForComparison(
   if (videoId) return videoId;
   return videoList ? pick(videoList) : null;
 }
+
+export const shortEnglishHumanizer = humanizeDuration.humanizer({
+  delimiter: ' ',
+  language: 'shortEn',
+  languages: {
+    shortEn: {
+      h: () => 'h',
+      m: () => 'm',
+      s: () => 's',
+    },
+  },
+});

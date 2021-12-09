@@ -21,6 +21,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@material-ui/icons';
+import { shortEnglishHumanizer } from 'src/utils/video';
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -65,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
   channel: {
     textDecorationLine: 'underline',
+    marginRight: '12px',
   },
   nb_tournesol: {
     fontFamily: 'Poppins',
@@ -220,6 +222,11 @@ function VideoCard({
           )}
           {video.uploader && (
             <span className={classes.channel}>{video.uploader}</span>
+          )}
+          {!!video.duration && video.duration && (
+            <span className={classes.youtube_complements_p}>
+              {shortEnglishHumanizer(video.duration * 1000)}
+            </span>
           )}
         </div>
         {!compact && (
