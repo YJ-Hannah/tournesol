@@ -1,4 +1,4 @@
-# tournesol
+# tournesol hi
 This repository host the open source code of the Tournesol platform. Learn more about it on our [Wiki](https://wiki.tournesol.app/) or join our [Discord](https://discord.gg/WvcSG55Bf3)
 
 ## Structure of the repository
